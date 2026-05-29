@@ -9,5 +9,19 @@ namespace JN_WEB.Controllers
         {
             return View();
         }
+
+        public IActionResult Registrar()
+        {
+            return View();
+        }
+
+        public IActionResult RecuperarAcceso()
+        {
+            return View();
+        }
+        public IActionResult Principal()
+        {
+            return View();
+        }
     }
 }
