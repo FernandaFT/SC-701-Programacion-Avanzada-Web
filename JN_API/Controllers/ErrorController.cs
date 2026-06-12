@@ -1,0 +1,29 @@
+﻿using Dapper;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+
+namespace JN_API.Controllers
+{
+    [ApiExplorerSettings(IgnoreApi = true)]
+    [Route("api/[controller]")]
+    [ApiController]
+    public class ErrorController(IConfiguration _config) : ControllerBase
+    {
+        [Route("RegistrarError")]
+        public IActionResult RegistrarError()
+        {
+            var ex = HttpContext.Features.Get<IExceptionHandlerFeature>();
+            using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@Mensaje", ex?.Error.Message);
+            parameters.Add("@Lugar", ex?.Path);
+            parameters.Add("@FechaHora", DateTime.Now);
+            parameters.Add("@ConsecutivoUsuario", 0);
+
+            var response = context.Execute("spRegistrarUsuario", parameters);
+            return StatusCode(500, "Se presentó un inconveniente técnico");
+        }
+    }
+}
