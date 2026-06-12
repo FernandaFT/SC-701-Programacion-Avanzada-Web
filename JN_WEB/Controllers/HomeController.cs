@@ -8,10 +8,35 @@ namespace JN_WEB.Controllers
         IHttpClientFactory _http, 
         IConfiguration _config) : Controller
     {
+
+        #region Iniciar Sesión
+        [HttpGet]
         public IActionResult Index()
         {
             return View();
         }
+
+        [HttpPost]
+        public IActionResult Index(UsuarioModel model)
+        {
+            using var client = _http.CreateClient();
+
+            var url = _config["Valores:UrlApi"] + "Home/IniciarSesionAPI";
+            var response = client.PostAsJsonAsync(url, model).Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return RedirectToAction("Principal", "Home");
+
+            }else if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                //Mensaje
+                return View();
+            }
+
+            throw new Exception("Error al iniciar sesión");
+        }
+        #endregion
 
         #region Registrar
         [HttpGet]

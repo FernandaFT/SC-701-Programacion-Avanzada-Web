@@ -10,10 +10,10 @@ namespace JN_API.Controllers
     [ApiController]
     public class HomeController(IConfiguration _config) : ControllerBase
     {
-        [HttpPost("RegistrarAPI")]
-        public IActionResult RegistrarAPI(UsuarioModel model)
-        {
 
+        [HttpPost("RegistrarAPI")]
+        public IActionResult RegistrarAPI(RegistroUsuarioRequestModel model)
+        {
             using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
 
             var parameters = new DynamicParameters();
@@ -25,5 +25,23 @@ namespace JN_API.Controllers
             var response = context.Execute("spRegistrarUsuario", parameters);
             return Ok(response);
         }
+
+        [HttpPost("IniciarSesionAPI")]
+        public IActionResult IniciarSesionAPI(InicioSesionUsuarioRequestModel model)
+        {
+            using var context = new SqlConnection(_config["ConnectionStrings:DefaultConnection"]);
+
+            var parameters = new DynamicParameters();
+            parameters.Add("@CorreoElectronico", model.CorreoElectronico);
+            parameters.Add("@Contrasenna", model.Contrasenna);
+
+            var response = context.QueryFirstOrDefault<UsuarioResponseModel>("spIniciarSesionUsuario", parameters);
+
+            if (response != null)
+                return Ok(response);
+            else
+                return NotFound("No se ha validado su información correctamente");
+        }
+
     }
 }
