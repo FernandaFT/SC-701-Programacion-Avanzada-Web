@@ -23,7 +23,10 @@ namespace JN_API.Controllers
             parameters.Add("@Contrasenna", model.Contrasenna);
 
             var response = context.Execute("spRegistrarUsuario", parameters);
-            return Ok(response);
+
+            if(response >=0)
+                return Ok(response);
+            return BadRequest("No se ha registrado su información correctamente, valide que no tenga una cuenta ya creada.");
         }
 
         [HttpPost("IniciarSesionAPI")]
@@ -40,7 +43,7 @@ namespace JN_API.Controllers
             if (response != null)
                 return Ok(response);
             else
-                return NotFound("No se ha validado su información correctamente");
+                return NotFound("No se ha validado su información correctamente.");
         }
 
     }
