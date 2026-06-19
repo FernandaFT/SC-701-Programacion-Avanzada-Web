@@ -26,6 +26,11 @@ namespace JN_WEB.Controllers
 
             if (response.StatusCode == System.Net.HttpStatusCode.OK)
             {
+                var datos = response.Content.ReadFromJsonAsync<UsuarioModel>().Result;
+
+                HttpContext.Session.SetString("Autenticado","1");
+                HttpContext.Session.SetString("Nombre", datos!.Nombre);
+
                 return RedirectToAction("Principal", "Home");
 
             }else if(response.StatusCode == System.Net.HttpStatusCode.NotFound)
@@ -79,5 +84,24 @@ namespace JN_WEB.Controllers
         {
             return View();
         }
+
+        public IActionResult Perfil()
+        {
+            return View();
+        }
+
+        public IActionResult Seguridad()
+        {
+            return View();
+        }
+
+        #region Cerrar Sesión
+        [HttpGet]
+        public IActionResult Salir()
+        {
+            HttpContext.Session.Clear();
+            return RedirectToAction("Index", "Home");
+        }
+        #endregion
     }
 }

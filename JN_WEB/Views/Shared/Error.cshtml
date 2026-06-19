@@ -1,6 +1,16 @@
-﻿<div class="row justify-content-center">
+﻿@{
+    var autenticado = Context.Session.GetString("Autenticado");
+}
+
+@if(autenticado == "1"){
+    Layout = "_Layout";
+}else{
+    Layout = "_LayoutExterno";
+}
+
+<div class="row justify-content-center">
     <div class="col-12">
-        <div class="card shadow border-0 rounded-4">
+        <div class="card border-0 rounded-4">
             <div class="card-body text-center" style="padding: 5rem 4rem;">
 
            
@@ -12,11 +22,22 @@
                     Por favor, comuníquese con el administrador del sistema.
                 </p>
 
-                <div class="d-flex justify-content-center mt-4">
-                    <a asp-controller="Home" asp-action="Principal" class="btn btn-primary">
-                        <i class="bi bi-house-fill me-1"></i> Ir al inicio
-                    </a>
-                </div>
+                @if (autenticado == "1")
+                {
+                    <div class="d-flex justify-content-center mt-4">
+                        <a asp-controller="Home" asp-action="Principal" class="btn btn-primary">
+                            <i class="bi bi-house-fill me-1"></i> Ir al inicio
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div class="d-flex justify-content-center mt-4">
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">
+                            <i class="bi bi-house-fill me-1"></i> Ir al inicio
+                        </a>
+                    </div>
+                }
 
             </div>
         </div>
