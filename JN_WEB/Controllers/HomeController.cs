@@ -1,6 +1,7 @@
 using JN_WEB.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using System.Net;
 
 namespace JN_WEB.Controllers
 {
@@ -74,12 +75,37 @@ namespace JN_WEB.Controllers
         #endregion
 
         #region Recuperar Acceso
+        [HttpGet]
         public IActionResult RecuperarAcceso()
         {
             return View();
         }
+
+        [HttpPost]
+        public IActionResult RecuperarAcceso(UsuarioModel model)
+        {
+            using var client = _http.CreateClient();
+
+            var url = _config["Valores:UrlApi"] + "Home/RecuperarAccesoAPI";
+            var response = client.PostAsJsonAsync(url, model).Result;
+
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                return RedirectToAction("Index", "Home");
+
+            }
+            else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest
+                       || response.StatusCode == HttpStatusCode.NotFound)
+            {
+                ViewBag.Mensaje = response.Content.ReadAsStringAsync().Result;
+                return View();
+            }
+
+            throw new Exception("Error al recuperar acceso");
+        }
         #endregion
 
+        [HttpGet]
         public IActionResult Principal()
         {
             return View();
