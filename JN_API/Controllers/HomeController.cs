@@ -65,6 +65,7 @@ namespace JN_API.Controllers
             parameters = new DynamicParameters();
             parameters.Add("@Consecutivo", response.Consecutivo);
             parameters.Add("@Contrasenna", temporal);
+            parameters.Add("@IndicadorTemp", true);
             var update = context.Execute("spActualizarContrasenna", parameters);
 
             if (update > 0)
