@@ -1,11 +1,10 @@
 USE [master]
 GO
 
-CREATE DATABASE [JN_BD]
-GO
 USE [JN_BD]
-
 GO
+
+
 CREATE TABLE [dbo].[tbError](
 	[Consecutivo] [int] IDENTITY(1,1) NOT NULL,
 	[Mensaje] [varchar](max) NOT NULL,
@@ -17,8 +16,8 @@ CREATE TABLE [dbo].[tbError](
 	[Consecutivo] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
 
+GO
 CREATE TABLE [dbo].[tbUsuario](
 	[Consecutivo] [int] IDENTITY(1,1) NOT NULL,
 	[Identificacion] [varchar](15) NOT NULL,
@@ -46,12 +45,15 @@ INSERT [dbo].[tbUsuario] ([Consecutivo], [Identificacion], [Nombre], [CorreoElec
 GO
 INSERT [dbo].[tbUsuario] ([Consecutivo], [Identificacion], [Nombre], [CorreoElectronico], [Contrasenna], [Estado], [UsaContrasennaTemp]) VALUES (5, N'118440532', N'JIMENEZ RIVERA DANIEL GUILLERMO', N'djimenez40532@ufide.ac.cr', N'2234c807c4', 1, 1)
 GO
-INSERT [dbo].[tbUsuario] ([Consecutivo], [Identificacion], [Nombre], [CorreoElectronico], [Contrasenna], [Estado], [UsaContrasennaTemp]) VALUES (6, N'119390692', N'GOMEZ TORRES KENNETH', N'kgomez90692@ufide.ac.cr', N'90692*', 1, 0)
+INSERT [dbo].[tbUsuario] ([Consecutivo], [Identificacion], [Nombre], [CorreoElectronico], [Contrasenna], [Estado], [UsaContrasennaTemp]) VALUES (6, N'119390692', N'KENNETH GOMEZ T', N'kgomez90692@ufide.ac.cr', N'12345*', 1, 0)
 GO
-INSERT [dbo].[tbUsuario] ([Consecutivo], [Identificacion], [Nombre], [CorreoElectronico], [Contrasenna], [Estado], [UsaContrasennaTemp]) VALUES (7, N'116700557', N'FAJARDO TORRES MARIA FERNANDA', N'mfajardo00557@ufide.ac.cr', N'123456', 1, 0)
-
+INSERT [dbo].[tbUsuario] ([Consecutivo], [Identificacion], [Nombre], [CorreoElectronico], [Contrasenna], [Estado], [UsaContrasennaTemp]) VALUES (7, N'116700557', N'FERNANDA FT', N'mfajardo00557@ufide.ac.cr', N'00557!', 1, 0)
 GO
-/****** Object:  Index [UK_CorreoElectronico]    Script Date: 3/7/2026 09:50:36 ******/
+SET IDENTITY_INSERT [dbo].[tbUsuario] OFF
+GO
+SET ANSI_PADDING ON
+GO
+/****** Object:  Index [UK_CorreoElectronico]    Script Date: 10/7/2026 12:56:06 ******/
 ALTER TABLE [dbo].[tbUsuario] ADD  CONSTRAINT [UK_CorreoElectronico] UNIQUE NONCLUSTERED 
 (
 	[CorreoElectronico] ASC
@@ -59,7 +61,7 @@ ALTER TABLE [dbo].[tbUsuario] ADD  CONSTRAINT [UK_CorreoElectronico] UNIQUE NONC
 GO
 SET ANSI_PADDING ON
 GO
-/****** Object:  Index [UK_Identificacion]    Script Date: 3/7/2026 09:50:36 ******/
+/****** Object:  Index [UK_Identificacion]    Script Date: 10/7/2026 12:56:06 ******/
 ALTER TABLE [dbo].[tbUsuario] ADD  CONSTRAINT [UK_Identificacion] UNIQUE NONCLUSTERED 
 (
 	[Identificacion] ASC
@@ -83,6 +85,37 @@ END
 
 GO
 
+CREATE PROCEDURE [dbo].[spActualizarPerfil]
+    @Consecutivo        int,
+    @Identificacion     varchar(15),
+    @Nombre             varchar(250),
+    @CorreoElectronico  varchar(100)
+AS
+BEGIN
+
+    UPDATE  dbo.tbUsuario
+       SET  Identificacion = @Identificacion,
+            Nombre = @Nombre,
+            CorreoElectronico = @CorreoElectronico
+     WHERE  Consecutivo = @Consecutivo
+
+END
+
+GO
+
+CREATE PROCEDURE [dbo].[spConsultarUsuario]
+    @Consecutivo  int
+AS
+BEGIN
+
+    SELECT  Consecutivo,Identificacion,Nombre,CorreoElectronico,Estado,UsaContrasennaTemp
+    FROM    dbo.tbUsuario
+    WHERE   Consecutivo = @Consecutivo
+
+END
+
+GO
+
 CREATE PROCEDURE [dbo].[spIniciarSesionUsuario]
     @CorreoElectronico  varchar(100),
     @Contrasenna        varchar(100)
@@ -96,7 +129,6 @@ BEGIN
         AND Estado = 1
 
 END
-
 
 GO
 
@@ -112,7 +144,6 @@ BEGIN
     VALUES (@Mensaje,@Lugar,@FechaHora,@ConsecutivoUsuario)
 
 END
-
 
 GO
 
@@ -139,7 +170,6 @@ BEGIN
 
 END
 
-
 GO
 
 CREATE PROCEDURE [dbo].[spValidarCorreo]
@@ -147,13 +177,12 @@ CREATE PROCEDURE [dbo].[spValidarCorreo]
 AS
 BEGIN
 
-    SELECT  Consecutivo,Identificacion,Nombre,CorreoElectronico,Estado
+    SELECT  Consecutivo,Identificacion,Nombre,CorreoElectronico,Estado,UsaContrasennaTemp
     FROM    dbo.tbUsuario
     WHERE   CorreoElectronico = @CorreoElectronico
         AND Estado = 1
 
 END
-
 GO
 USE [master]
 GO
