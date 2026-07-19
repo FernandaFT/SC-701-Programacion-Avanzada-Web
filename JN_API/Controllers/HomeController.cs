@@ -1,11 +1,13 @@
 ﻿using Dapper;
 using JN_API.Models;
+using JN_API.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
-using JN_API.Services;
 
 namespace JN_API.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class HomeController(IConfiguration _config, IUtilesService _utiles) : ControllerBase
@@ -40,10 +42,13 @@ namespace JN_API.Controllers
 
             var response = context.QueryFirstOrDefault<UsuarioResponseModel>("spIniciarSesionUsuario", parameters);
 
-            if (response != null)
+            if (response != null && BCrypt.Net.BCrypt.Verify(model.Contrasenna, response.Contrasenna))
+            {
+                response.Token = _utiles.GenerarToken(response.Consecutivo);
                 return Ok(response);
+            }
             else
-                return NotFound("No se ha validado su información correctamente.");
+                return NotFound("No se ha validado su información correctamente");
         }
 
         [HttpPost("RecuperarAccesoAPI")]
@@ -60,10 +65,11 @@ namespace JN_API.Controllers
 
             //2. Generar una contraseña temporal
             var temporal = _utiles.GenerarContrasena();
+            var temporalCifrada = BCrypt.Net.BCrypt.HashPassword(temporal);
 
             parameters = new DynamicParameters();
             parameters.Add("@Consecutivo", response.Consecutivo);
-            parameters.Add("@Contrasenna", temporal);
+            parameters.Add("@Contrasenna", temporalCifrada);
             parameters.Add("@IndicadorTemp", true);
             var update = context.Execute("spActualizarContrasenna", parameters);
 
